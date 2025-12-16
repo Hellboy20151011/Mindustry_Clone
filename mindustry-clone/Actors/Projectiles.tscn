@@ -1,0 +1,21 @@
+[gd_scene load_steps=5 format=3 uid="uid://bywr8mmpf16qr"]
+
+[ext_resource type="Script" uid="uid://b8tlhce7acgg6" path="res://Scripts/Projectile.gd" id="1_h5tc8"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_tyc4g"]
+
+[sub_resource type="Gradient" id="Gradient_h5tc8"]
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_rrdmw"]
+gradient = SubResource("Gradient_h5tc8")
+
+[node name="Area2D" type="Area2D"]
+script = ExtResource("1_h5tc8")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_tyc4g")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = SubResource("GradientTexture2D_rrdmw")
+
+[node name="VisibleOnScreenNotifier2D" type="VisibleOnScreenNotifier2D" parent="."]
