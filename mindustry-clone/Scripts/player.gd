@@ -33,8 +33,8 @@ signal shield_changed(current: float, maximum: float)
 var target_zoom: float = 0.8
 
 # Current stat values
-var current_health: float
-var current_shield: float
+var current_health: float = 0.0
+var current_shield: float = 0.0
 
 # Inventar (Startwerte)
 var inventory := {

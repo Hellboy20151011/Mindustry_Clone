@@ -34,11 +34,11 @@ func _ready() -> void:
 		if "inventory" in _player:
 			_refresh_all(_player.inventory)
 
-	# Live-Updates für Inventar
+	# Live-Updates for inventory
 	if _player.has_signal("inventory_changed"):
 		_player.connect("inventory_changed", Callable(self, "_on_inventory_changed"))
 	
-	# Live-Updates für Stats
+	# Live-Updates for stats
 	if _player.has_signal("health_changed"):
 		_player.connect("health_changed", Callable(self, "_on_health_changed"))
 	if _player.has_signal("shield_changed"):

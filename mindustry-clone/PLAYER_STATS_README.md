@@ -83,7 +83,7 @@ player.restore_shield(25.0)  # Restores 25 shield
 
 # Get all stats
 var stats = player.get_stats()
-print("Health: ", stats.current_health, "/", stats.max_health)
+print("Health: ", stats["current_health"], "/", stats["max_health"])
 ```
 
 ## Testing the Implementation
