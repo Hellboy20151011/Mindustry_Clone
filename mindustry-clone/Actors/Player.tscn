@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://dogpmn2rc2vcj"]
+[gd_scene load_steps=10 format=3 uid="uid://dogpmn2rc2vcj"]
 
 [ext_resource type="Script" uid="uid://bgi5lckuq46p1" path="res://Scripts/player.gd" id="1_3obwd"]
 [ext_resource type="Resource" uid="uid://dlyg7dnbfqmky" path="res://Actors/pistol.tres" id="3_fsb2p"]
@@ -24,7 +24,10 @@ animations = [{
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_3obwd"]
 
-[node name="CharacterBody2D" type="CharacterBody2D"]
+[sub_resource type="CircleShape2D" id="CircleShape2D_ypwy6"]
+radius = 80.0
+
+[node name="Player" type="CharacterBody2D" groups=["Player"]]
 script = ExtResource("1_3obwd")
 
 [node name="WeaponPivot" type="Node2D" parent="."]
@@ -37,7 +40,9 @@ weapon_data = ExtResource("3_fsb2p")
 shape = SubResource("CircleShape2D_l4ngm")
 
 [node name="Camera2D" type="Camera2D" parent="."]
+zoom = Vector2(1.4, 1.4)
 position_smoothing_enabled = true
+position_smoothing_speed = 8.0
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 
@@ -50,3 +55,8 @@ frame_progress = 0.51770014
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
 shape = SubResource("CircleShape2D_3obwd")
+
+[node name="Interact_Area" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interact_Area"]
+shape = SubResource("CircleShape2D_ypwy6")

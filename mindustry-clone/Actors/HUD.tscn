@@ -1,0 +1,32 @@
+[gd_scene load_steps=2 format=3 uid="uid://dxrfaxw1dlkw8"]
+
+[ext_resource type="Script" uid="uid://dxvqfmjf5fmwo" path="res://Actors/hud.gd" id="1_8v4n6"]
+
+[node name="Hud" type="CanvasLayer"]
+script = ExtResource("1_8v4n6")
+
+[node name="TopLeftPanel" type="PanelContainer" parent="."]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="MarginContainer" type="MarginContainer" parent="TopLeftPanel"]
+layout_mode = 2
+
+[node name="ResourceBox" type="VBoxContainer" parent="TopLeftPanel/MarginContainer"]
+layout_mode = 2
+
+[node name="StoneLabel" type="Label" parent="TopLeftPanel/MarginContainer/ResourceBox"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="WoodLabel" type="Label" parent="TopLeftPanel/MarginContainer/ResourceBox"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="CoalLabel" type="Label" parent="TopLeftPanel/MarginContainer/ResourceBox"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="IronLabel" type="Label" parent="TopLeftPanel/MarginContainer/ResourceBox"]
+unique_name_in_owner = true
+layout_mode = 2

@@ -1,12 +1,15 @@
-[gd_scene load_steps=2 format=3 uid="uid://gknr2vggktrp"]
+[gd_scene load_steps=4 format=3 uid="uid://gknr2vggktrp"]
+
+[ext_resource type="Script" uid="uid://m1qx721f8274" path="res://Scripts/resource_node.gd" id="1_nrknj"]
+[ext_resource type="Texture2D" uid="uid://cgu45jhjcfuqu" path="res://Assets/Terrain/Stein.png" id="2_v8tyx"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_ufwdw"]
 
-[node name="Node2D" type="Node2D"]
+[node name="ResourceNode" type="Area2D"]
+script = ExtResource("1_nrknj")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_ufwdw")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-
-[node name="Area2D" type="Area2D" parent="."]
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
-shape = SubResource("CircleShape2D_ufwdw")
+texture = ExtResource("2_v8tyx")
