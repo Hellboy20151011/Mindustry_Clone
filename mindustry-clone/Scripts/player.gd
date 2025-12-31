@@ -174,8 +174,8 @@ func get_inventory() -> Dictionary:
 	return inventory
 
 # Stat management functions
+## Apply damage to shield first, then health
 func take_damage(amount: float) -> void:
-	"""Apply damage to shield first, then health"""
 	if current_shield > 0:
 		var shield_damage = min(amount, current_shield)
 		current_shield -= shield_damage
@@ -189,18 +189,18 @@ func take_damage(amount: float) -> void:
 		if current_health <= 0:
 			_on_death()
 
+## Restore health
 func heal(amount: float) -> void:
-	"""Restore health"""
 	current_health = min(max_health, current_health + amount)
 	health_changed.emit(current_health, max_health)
 
+## Restore shield
 func restore_shield(amount: float) -> void:
-	"""Restore shield"""
 	current_shield = min(max_shield, current_shield + amount)
 	shield_changed.emit(current_shield, max_shield)
 
+## Return all player stats
 func get_stats() -> Dictionary:
-	"""Return all player stats"""
 	return {
 		"max_health": max_health,
 		"current_health": current_health,
@@ -210,8 +210,8 @@ func get_stats() -> Dictionary:
 		"build_speed": build_speed
 	}
 
+## Called when player health reaches 0
 func _on_death() -> void:
-	"""Called when player health reaches 0"""
 	# Placeholder for death logic
 	print("Player died!")
 	# Could implement respawn, game over, etc.

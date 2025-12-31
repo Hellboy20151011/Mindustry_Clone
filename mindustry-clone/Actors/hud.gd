@@ -79,8 +79,8 @@ func _on_health_changed(current: float, maximum: float) -> void:
 func _on_shield_changed(current: float, maximum: float) -> void:
 	shield_label.text = "Shield: %.0f/%.0f" % [current, maximum]
 
+## Update all stat displays
 func _update_all_stats(stats: Dictionary) -> void:
-	"""Update all stat displays"""
 	health_label.text = "Health: %.0f/%.0f" % [stats.get("current_health", 0), stats.get("max_health", 0)]
 	shield_label.text = "Shield: %.0f/%.0f" % [stats.get("current_shield", 0), stats.get("max_shield", 0)]
 	speed_label.text = "Speed: %.0f" % stats.get("max_speed", 0)
