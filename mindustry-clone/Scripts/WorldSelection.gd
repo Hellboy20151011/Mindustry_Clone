@@ -20,7 +20,9 @@ func _populate_worlds() -> void:
 		world_list.add_child(button)
 
 func _on_world_selected(world_name: String) -> void:
-	# For now, always load the test_map
+	# TODO: Implement world-specific loading logic
+	# For now, all world buttons load the same test_map scene
+	# Future implementation could save/load different world states
 	get_tree().change_scene_to_file("res://Maps/test_map.tscn")
 
 func _on_back_pressed() -> void:
