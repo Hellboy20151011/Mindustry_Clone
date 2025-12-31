@@ -12,10 +12,14 @@ extends CanvasLayer
 @onready var shield_label: Label = %ShieldLabel
 @onready var speed_label: Label = %SpeedLabel
 @onready var build_speed_label: Label = %BuildSpeedLabel
+@onready var menu_button: Button = %MenuButton
 
 var _player: Node = null
 
 func _ready() -> void:
+	# Connect menu button
+	menu_button.pressed.connect(_on_menu_button_pressed)
+	
 	if player_path != NodePath():
 		_player = get_node(player_path)
 	else:
@@ -85,3 +89,6 @@ func _update_all_stats(stats: Dictionary) -> void:
 	shield_label.text = "Shield: %.0f/%.0f" % [stats.get("current_shield", 0), stats.get("max_shield", 0)]
 	speed_label.text = "Speed: %.0f" % stats.get("max_speed", 0)
 	build_speed_label.text = "Build Speed: %.1fx" % stats.get("build_speed", 1.0)
+
+func _on_menu_button_pressed() -> void:
+	get_tree().change_scene_to_file("res://Menus/MainMenu.tscn")
