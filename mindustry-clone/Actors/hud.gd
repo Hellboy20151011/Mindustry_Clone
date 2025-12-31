@@ -7,6 +7,12 @@ extends CanvasLayer
 @onready var coal_label: Label = %CoalLabel
 @onready var iron_label: Label = %IronLabel
 
+# Player stat labels
+@onready var health_label: Label = %HealthLabel
+@onready var shield_label: Label = %ShieldLabel
+@onready var speed_label: Label = %SpeedLabel
+@onready var build_speed_label: Label = %BuildSpeedLabel
+
 var _player: Node = null
 
 func _ready() -> void:
@@ -28,9 +34,20 @@ func _ready() -> void:
 		if "inventory" in _player:
 			_refresh_all(_player.inventory)
 
-	# Live-Updates
+	# Live-Updates für Inventar
 	if _player.has_signal("inventory_changed"):
 		_player.connect("inventory_changed", Callable(self, "_on_inventory_changed"))
+	
+	# Live-Updates für Stats
+	if _player.has_signal("health_changed"):
+		_player.connect("health_changed", Callable(self, "_on_health_changed"))
+	if _player.has_signal("shield_changed"):
+		_player.connect("shield_changed", Callable(self, "_on_shield_changed"))
+	
+	# Initial stats display
+	if _player.has_method("get_stats"):
+		var stats = _player.call("get_stats")
+		_update_all_stats(stats)
 
 func _refresh_all(inv: Dictionary) -> void:
 	_set_label(stone_label, "Stone", inv.get("stone", 0))
@@ -54,3 +71,17 @@ func _on_inventory_changed(key: String, new_value: int) -> void:
 
 func _set_label(label: Label, title: String, value: int) -> void:
 	label.text = "%s: %d" % [title, value]
+
+# Player stat update functions
+func _on_health_changed(current: float, maximum: float) -> void:
+	health_label.text = "Health: %.0f/%.0f" % [current, maximum]
+
+func _on_shield_changed(current: float, maximum: float) -> void:
+	shield_label.text = "Shield: %.0f/%.0f" % [current, maximum]
+
+func _update_all_stats(stats: Dictionary) -> void:
+	"""Update all stat displays"""
+	health_label.text = "Health: %.0f/%.0f" % [stats.get("current_health", 0), stats.get("max_health", 0)]
+	shield_label.text = "Shield: %.0f/%.0f" % [stats.get("current_shield", 0), stats.get("max_shield", 0)]
+	speed_label.text = "Speed: %.0f" % stats.get("max_speed", 0)
+	build_speed_label.text = "Build Speed: %.1fx" % stats.get("build_speed", 1.0)

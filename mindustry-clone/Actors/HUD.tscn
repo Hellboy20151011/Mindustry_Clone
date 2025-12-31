@@ -30,3 +30,42 @@ layout_mode = 2
 [node name="IronLabel" type="Label" parent="TopLeftPanel/MarginContainer/ResourceBox"]
 unique_name_in_owner = true
 layout_mode = 2
+
+[node name="TopRightPanel" type="PanelContainer" parent="."]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -200.0
+offset_right = 0.0
+offset_bottom = 40.0
+grow_horizontal = 0
+
+[node name="MarginContainer" type="MarginContainer" parent="TopRightPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="StatsBox" type="VBoxContainer" parent="TopRightPanel/MarginContainer"]
+layout_mode = 2
+
+[node name="HealthLabel" type="Label" parent="TopRightPanel/MarginContainer/StatsBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Health: 100/100"
+
+[node name="ShieldLabel" type="Label" parent="TopRightPanel/MarginContainer/StatsBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Shield: 50/50"
+
+[node name="SpeedLabel" type="Label" parent="TopRightPanel/MarginContainer/StatsBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Speed: 280"
+
+[node name="BuildSpeedLabel" type="Label" parent="TopRightPanel/MarginContainer/StatsBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Build Speed: 1.0x"

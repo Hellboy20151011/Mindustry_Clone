@@ -1,8 +1,16 @@
 extends CharacterBody2D
 
 signal inventory_changed(key: String, new_value: int)
+signal health_changed(current: float, maximum: float)
+signal shield_changed(current: float, maximum: float)
 
+# Player Statistics
+@export_group("Player Stats")
+@export var max_health: float = 100.0
+@export var max_shield: float = 50.0
+@export var build_speed: float = 1.0  # Multiplier for building actions
 
+@export_group("Movement")
 @export var max_speed: float = 280.0
 @export var acceleration: float = 1400.0
 @export var friction: float = 900.0
@@ -23,6 +31,10 @@ signal inventory_changed(key: String, new_value: int)
 @onready var interact_area: Area2D = $Interact_Area
 
 var target_zoom: float = 0.8
+
+# Current stat values
+var current_health: float
+var current_shield: float
 
 # Inventar (Startwerte)
 var inventory := {
@@ -47,6 +59,14 @@ var _fraction_buffer := {} # key -> float
 
 func _ready() -> void:
 	target_zoom = cam.zoom.x
+	
+	# Initialize stats
+	current_health = max_health
+	current_shield = max_shield
+	
+	# Emit initial stat values
+	health_changed.emit(current_health, max_health)
+	shield_changed.emit(current_shield, max_shield)
 
 func _physics_process(delta: float) -> void:
 	# --- Bewegung ---
@@ -152,3 +172,46 @@ func _add_resource_fractional(key: String, amount: float) -> void:
 
 func get_inventory() -> Dictionary:
 	return inventory
+
+# Stat management functions
+func take_damage(amount: float) -> void:
+	"""Apply damage to shield first, then health"""
+	if current_shield > 0:
+		var shield_damage = min(amount, current_shield)
+		current_shield -= shield_damage
+		amount -= shield_damage
+		shield_changed.emit(current_shield, max_shield)
+	
+	if amount > 0 and current_health > 0:
+		current_health = max(0, current_health - amount)
+		health_changed.emit(current_health, max_health)
+		
+		if current_health <= 0:
+			_on_death()
+
+func heal(amount: float) -> void:
+	"""Restore health"""
+	current_health = min(max_health, current_health + amount)
+	health_changed.emit(current_health, max_health)
+
+func restore_shield(amount: float) -> void:
+	"""Restore shield"""
+	current_shield = min(max_shield, current_shield + amount)
+	shield_changed.emit(current_shield, max_shield)
+
+func get_stats() -> Dictionary:
+	"""Return all player stats"""
+	return {
+		"max_health": max_health,
+		"current_health": current_health,
+		"max_shield": max_shield,
+		"current_shield": current_shield,
+		"max_speed": max_speed,
+		"build_speed": build_speed
+	}
+
+func _on_death() -> void:
+	"""Called when player health reaches 0"""
+	# Placeholder for death logic
+	print("Player died!")
+	# Could implement respawn, game over, etc.
