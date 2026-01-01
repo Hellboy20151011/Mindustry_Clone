@@ -24,7 +24,7 @@ func _process(delta: float) -> void:
 
 func fire() -> void:
 	if weapon_data == null:
-		push_error("WeaponData nicht gesetzt!")
+		push_error("WeaponData not set!")
 		return
 
 	var pellets := weapon_data.shots_per_trigger
