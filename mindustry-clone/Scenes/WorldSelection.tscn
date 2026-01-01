@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://ds7v0m4y5dqj3"]
 
-[ext_resource type="Script" path="res://Scripts/world_selection.gd" id="1_world_selection"]
+[ext_resource type="Script" path="res://Scripts/Menus/world_selection.gd" id="1_world_selection"]
 
 [node name="WorldSelection" type="Control"]
 layout_mode = 3
