@@ -1,8 +1,20 @@
-# 🚀 Mindustry Clone - Nächste Schritte & Roadmap
+# 🚀 Mindustry Clone - Lern-Roadmap & Nächste Schritte
 
 **Projekt:** Mindustry Clone (Godot Engine)  
 **Stand:** Januar 2026  
-**Version:** 0.2 (Post-Strukturverbesserung)
+**Version:** 0.2 (Post-Strukturverbesserung)  
+**Fokus:** Eigene Mechaniken entwickeln, von Mindustry inspiriert aber nicht kopiert
+
+---
+
+## 🎓 Lernziele
+
+Dieses Projekt dient dem Lernen von:
+- **Godot Engine Grundlagen** - Szenen, Nodes, Signals, Resources
+- **GDScript Programmierung** - OOP, Komponenten-Architektur, Best Practices
+- **Spielmechaniken** - Ressourcenmanagement, Kampfsysteme, Fortschritt
+- **Git & GitHub** - Versionskontrolle, Issues, Projektmanagement
+- **Gamedesign** - Balance, Feedback-Loops, Player Experience
 
 ---
 
@@ -11,7 +23,7 @@
 ### ✅ Bereits Implementiert
 - **Player System** - Vollständig modular mit Komponenten (Movement, Camera, Stats, Mining, Inventory)
 - **Waffensystem** - Waffen-Controller, Projektile, Weapon Data Resources
-- **Ressourcen-Abbau** - Mining-System für Stone, Wood, Coal, Iron
+- **Ressourcen-Abbau** - Mining-System für Stone, Wood, Coal, Iron (manuell)
 - **Inventar-System** - Ressourcenverwaltung mit fractional accumulation
 - **UI/HUD** - Anzeige für Ressourcen und Stats
 - **Menüs** - Main Menu, Settings, World Selection
@@ -21,801 +33,723 @@
 ```
 mindustry-clone/
 ├── Scripts/
-│   ├── Player/      ✅ Vollständig
-│   ├── Weapons/     ✅ Vollständig
-│   ├── Resources/   ✅ Basis implementiert
+│   ├── Player/      ✅ Vollständig modularisiert
+│   ├── Weapons/     ✅ Basis-System funktional
+│   ├── Resources/   ✅ Mining implementiert
 │   ├── UI/          ✅ HUD vorhanden
 │   ├── Menus/       ✅ Funktional
-│   ├── Buildings/   ❌ Noch nicht erstellt
-│   ├── Logistics/   ❌ Noch nicht erstellt
-│   ├── Research/    ❌ Noch nicht erstellt
-│   ├── Enemies/     ❌ Noch nicht erstellt
-│   └── Core/        ⚠️  Leer (für Manager)
+│   ├── Buildings/   🎯 Nächster Fokus
+│   ├── World/       🎯 Für Weltlogik
+│   ├── Entities/    🎯 Für NPCs/Enemies
+│   └── Core/        ⚠️  Leer (für zentrale Manager)
 ├── Actors/          ⚠️  Player, ResourceNode (erweiterbar)
 ├── Scenes/          ✅ Basis vorhanden
 ├── Maps/            ✅ Test-Map vorhanden
 └── Assets/          ⚠️  Basic Assets (erweiterbar)
 ```
 
+### 🔧 Was funktioniert bereits gut
+- **Komponenten-basierte Architektur** - Einfach zu erweitern und zu testen
+- **Signal-basierte Kommunikation** - Lose gekoppelt, wartbar
+- **Resource-driven Design** - WeaponData nutzt Godot Resources
+- **Fractional Accumulation** - Smoothes Mining-Gefühl
+
 ---
 
-## 🏗️ Phase 1: Gebäude-System (Buildings)
+## 🏗️ Phase 1: Visuelles Feedback & Polish (Woche 1-2)
 
 ### Priorität: **HOCH** 🔴
 
-Das Gebäude-System ist fundamental für Mindustry und sollte als nächstes implementiert werden.
+**Lernziel:** Visuelles Feedback und Player Experience verbessern  
+**Warum:** Ein Spiel muss Spaß machen - visuelle Rückmeldung ist essentiell!
 
-### 1.1 Basis-Gebäude Architektur
+### 1.1 Mining Feedback
+Das Mining-System funktioniert, aber der Spieler sieht nicht viel davon.
 
-#### Kern-Komponenten
-```
-Scripts/Buildings/
-├── base_building.gd          # Basis-Klasse für alle Gebäude
-├── building_placer.gd        # Grid-basiertes Platzierungs-System
-├── building_data.gd          # Resource für Gebäude-Definitionen
-└── building_manager.gd       # Autoload für Gebäude-Verwaltung
-```
+#### Was hinzufügen:
+- **Partikel-Effekte** beim Mining (Staub, Funken, Splitter)
+- **Animation** - ResourceNode "wackelt" wenn abgebaut wird
+- **Sound-Effekte** - Unterschiedliche Sounds für Stone, Wood, Coal
+- **Progress-Bar** - Zeigt wie viel schon abgebaut wurde (optional)
+- **Visual Depletion** - Node wird durchsichtiger wenn erschöpft
 
-#### Features
-- **Grid-System** - Snap-to-Grid Platzierung (z.B. 32x32 oder 64x64 Pixel)
-- **Bau-Kosten** - Ressourcen-Check aus PlayerInventory
-- **Bau-Modus** - Toggle für Platzierungs-UI (z.B. B-Taste)
-- **Vorschau** - Ghost-Building vor Platzierung
-- **Kollisions-Check** - Prüfung ob Platz frei ist
-- **Rotation** - Gebäude um 90° drehen (R-Taste)
-
-### 1.2 Produktions-Gebäude
-
-#### Drill (Bohrer)
+#### Implementierung:
 ```gdscript
-# Eigenschaften:
-- Abbaut Ressourcen automatisch von ResourceNodes
-- Benötigt: 10 Stone, 5 Iron
-- Abbaurate: 2.0/Sekunde (langsamer als manuell)
-- Reichweite: 64 Pixel
-- Output: In angrenzenden Container oder Conveyor
+# In ResourceNode.gd hinzufügen:
+@onready var particles: GPUParticles2D = $MiningParticles
+
+func _on_being_mined():
+    # Partikel aktivieren
+    if particles:
+        particles.emitting = true
+    
+    # Animation abspielen
+    if animation_player:
+        animation_player.play("shake")
 ```
 
-#### Mechanical Drill (Verbesserter Bohrer)
+#### Lernpunkte:
+- Godot Particle System (GPUParticles2D)
+- AnimationPlayer Basics
+- AudioStreamPlayer für Sound
+- Shader Effects (optional für Transparenz)
+
+### 1.2 Resource Node Varietät
+Aktuell gibt es nur basic ResourceNodes. Mehr Abwechslung macht das Spiel interessanter!
+
+#### Was hinzufügen:
+- **Verschiedene Größen** - Small (50 resources), Medium (200), Large (500)
+- **Visuelle Unterschiede** - Verschiedene Sprites für jede Ressource
+- **Spawn-System** - ResourceNodes zufällig auf der Map platzieren
+- **Regeneration** (Optional) - Nodes füllen sich langsam wieder auf
+
+#### Implementierung:
 ```gdscript
-- Schnellerer Abbau: 6.0/Sekunde
-- Benötigt: 20 Iron, 10 Coal
-- Kann auch seltene Ressourcen abbauen
+# resource_node.gd erweitern:
+@export var max_resources: float = 100.0
+@export var current_resources: float = 100.0
+@export var depletes: bool = true  # Kann aufgebraucht werden?
+
+func mine(amount: float) -> float:
+    if current_resources <= 0:
+        return 0.0
+    
+    var mined = min(amount, current_resources)
+    current_resources -= mined
+    
+    if depletes and current_resources <= 0:
+        queue_free()  # Node verschwindet
+    
+    return mined
 ```
 
-#### Coal Generator (Kohle-Generator)
-```gdscript
-- Verbraucht Coal für Energie
-- Benötigt: 15 Stone, 10 Coal
-- Produziert: Energie für andere Gebäude
-- Verbrauch: 1 Coal / 10 Sekunden
-- Output: 10 Energie/Sekunde
-```
+#### Lernpunkte:
+- Export-Variablen für Designer-Friendly Workflow
+- Resource Management
+- Node Lifecycle (queue_free)
 
-#### Steam Generator (Dampf-Generator)
-```gdscript
-- Benötigt Coal + Water
-- Höhere Energie-Output: 25 Energie/Sekunde
-- Komplexere Logistik
-```
+### 1.3 Implementierungs-Checkliste Phase 1
 
-### 1.3 Verarbeitungs-Gebäude
-
-#### Smelter (Schmelzofen)
-```gdscript
-- Wandelt Erze in Barren um
-- Iron Ore → Iron Ingot (2:1 Verhältnis)
-- Benötigt Energie zum Betrieb
-- Verarbeitungszeit: 3 Sekunden
-```
-
-#### Silicon Smelter
-```gdscript
-- Coal + Sand → Silicon
-- Wichtig für fortgeschrittene Technologie
-- Benötigt: 30 Iron, 20 Coal
-```
-
-#### Coal Centrifuge
-```gdscript
-- Oil + Coal → Höherwertiger Treibstoff
-- Für Spätspiel-Energie
-```
-
-### 1.4 Verteidigungs-Gebäude
-
-#### Duo (Basis-Turm)
-```gdscript
-# Eigenschaften:
-- Schießt automatisch auf Feinde
-- Reichweite: 150 Pixel
-- Schaden: 5 pro Schuss
-- Feuerrate: 0.5/Sekunde
-- Benötigt: 20 Stone, 10 Iron
-- Optional: Munition aus Ressourcen
-```
-
-#### Scatter (Shotgun-Turm)
-```gdscript
-- Multiple Projektile gleichzeitig
-- Kürzere Reichweite, höherer Schaden
-- Benötigt: 30 Iron, 15 Coal
-```
-
-#### Hail (Raketen-Turm)
-```gdscript
-- Langsam aber starker Schaden
-- Benötigt spezielle Munition
-- Reichweite: 250 Pixel
-```
-
-#### Wall (Mauer)
-```gdscript
-- Einfache Verteidigung
-- Benötigt: 5 Stone
-- HP: 200
-- Kann upgraded werden zu Titanium Wall
-```
-
-### 1.5 Implementierungs-Checkliste Buildings
-
-- [ ] **Woche 1-2: Basis-System**
-  - [ ] BaseBuilding Klasse erstellen
-  - [ ] Grid-System implementieren
-  - [ ] BuildingPlacer mit Ghost-Vorschau
-  - [ ] Ressourcen-Kosten Integration
-  - [ ] Rotation & Placement UI
+- [ ] **Tag 1-2: Partikel & Effekte**
+  - [ ] GPUParticles2D für Mining erstellen
+  - [ ] AnimationPlayer für "shake" Animation
+  - [ ] Sound-Effekte integrieren
   
-- [ ] **Woche 3: Erste Gebäude**
-  - [ ] Drill (einfacher Bohrer) implementieren
-  - [ ] Wall (Mauer) als einfaches Verteidigungs-Gebäude
-  - [ ] Container (Storage) für Ressourcen
-  - [ ] Testing & Balancing
+- [ ] **Tag 3-4: Resource Node Varietät**
+  - [ ] Verschiedene Sprites für Stone/Wood/Coal
+  - [ ] ResourceNode mit max_resources/current_resources
+  - [ ] Depletion-System (Node verschwindet)
+  - [ ] Testing verschiedener Größen
   
-- [ ] **Woche 4: Erweiterung**
-  - [ ] Duo Turm (Auto-Targeting)
-  - [ ] Coal Generator (Energie-System Basis)
-  - [ ] Smelter (erste Verarbeitung)
-  - [ ] UI für Gebäude-Auswahl (Build-Menu)
+- [ ] **Tag 5-7: Polish & Testing**
+  - [ ] Balancing (wie schnell sollen Nodes leer sein?)
+  - [ ] UI Update (zeige "Resource depleted" Message)
+  - [ ] Bug fixing
+  - [ ] Dokumentation updaten
+
+**Zeitaufwand:** ~1-2 Wochen (je nach verfügbarer Zeit)  
+**Deliverable:** Mining fühlt sich gut an, hat visuelles Feedback, und ist abwechslungsreich
 
 ---
 
-## 🔬 Phase 2: Forschungs-System (Research/Tech Tree)
+## 🎮 Phase 2: Einfaches Platzierungs-System (Woche 3-4)
+
+### Priorität: **HOCH** 🔴
+
+**Lernziel:** Grid-basierte Platzierung lernen, Basis für zukünftige Gebäude  
+**Warum:** Fundament für alle späteren Strukturen
+
+### 2.1 Basis-Platzierungs-System
+
+Nicht direkt komplex starten - erstmal ein einfaches Objekt platzieren können!
+
+#### Was implementieren:
+- **Grid-Snapping** - Objekte rasten in ein Grid ein (32x32 oder 64x64 Pixel)
+- **Bau-Modus** - "B" Taste aktiviert Platzierungs-Modus
+- **Ghost Preview** - Halbtransparentes Preview wo das Objekt platziert wird
+- **Kollisions-Check** - Kann nur auf freien Flächen gebaut werden
+- **Ressourcen-Kosten** - Nimmt Ressourcen aus Inventory
+
+#### Start Simple: "Storage Box"
+```gdscript
+# placeable_object.gd
+extends StaticBody2D
+class_name PlaceableObject
+
+@export var cost: Dictionary = {"stone": 10}
+@export var grid_size: int = 32
+
+func can_afford(inventory: Dictionary) -> bool:
+    for resource in cost:
+        if inventory.get(resource, 0) < cost[resource]:
+            return false
+    return true
+```
+
+#### Build Mode Controller:
+```gdscript
+# build_mode.gd (neuer Node oder Teil von Player)
+var build_mode: bool = false
+var ghost: Node2D = null
+var preview_object = preload("res://Actors/StorageBox.tscn")
+
+func _input(event):
+    if event.is_action_pressed("toggle_build_mode"):
+        build_mode = !build_mode
+        if build_mode:
+            _create_ghost()
+        else:
+            _remove_ghost()
+
+func _create_ghost():
+    ghost = preview_object.instantiate()
+    ghost.modulate = Color(1, 1, 1, 0.5)  # Halbtransparent
+    add_child(ghost)
+```
+
+#### Lernpunkte:
+- Grid-Mathematik (position = (mouse_pos / grid_size).floor() * grid_size)
+- Scene Instancing
+- Input Handling
+- Collision Layers/Masks
+
+### 2.2 Erste platzierbare Struktur: "Storage Box"
+
+Ein einfaches Lager-Objekt das keine Logik braucht.
+
+#### Features:
+- **Kostet:** 10 Stone
+- **Funktion:** Zeigt an dass man bauen kann (später: lagert Ressourcen)
+- **Sprite:** Einfache Box-Grafik
+- **HP:** 100 (kann zerstört werden)
+
+#### Warum Storage Box?
+- ✅ Einfach (keine komplexe Logik nötig)
+- ✅ Nützlich (Storage ist immer nützlich)
+- ✅ Testbed (für Placement-System)
+- ✅ Erweiterbar (später: echtes Storage-System)
+
+### 2.3 Implementierungs-Checkliste Phase 2
+
+- [ ] **Tag 1-3: Grid System**
+  - [ ] Grid-Snap Mathematik implementieren
+  - [ ] Build Mode Toggle (B-Taste)
+  - [ ] Ghost Preview erstellen
+  - [ ] Mouse Position zu Grid Position
+  
+- [ ] **Tag 4-5: Platzierungs-Logik**
+  - [ ] Collision Detection (freier Platz?)
+  - [ ] Ressourcen-Check (kann ich mir das leisten?)
+  - [ ] Platzieren bei Mouse Click
+  - [ ] Ressourcen vom Inventory abziehen
+  
+- [ ] **Tag 6-7: Storage Box**
+  - [ ] Scene erstellen (Sprite, CollisionShape)
+  - [ ] PlaceableObject Script
+  - [ ] Testing (platzieren, zerstören)
+  - [ ] UI Feedback ("Nicht genug Ressourcen")
+
+**Zeitaufwand:** ~1-2 Wochen  
+**Deliverable:** Spieler kann Storage Boxes auf einem Grid platzieren
+
+---
+
+## 🌍 Phase 3: Welt-Erweiterung (Woche 5-6)
 
 ### Priorität: **MITTEL** 🟡
 
-Ein Tech Tree motiviert Progression und gibt dem Spiel Struktur.
+**Lernziel:** Leveldesign, Biome, Abwechslung  
+**Warum:** Mehr Content = Mehr zu entdecken
 
-### 2.1 Research Architektur
+### 3.1 Mehrere Maps
 
-```
-Scripts/Research/
-├── research_tree.gd          # Autoload: Verwaltet Tech Tree
-├── research_node.gd          # Resource: Eine Technologie
-├── research_ui.gd            # UI für Tech Tree Anzeige
-└── research_requirements.gd  # Freischalt-Bedingungen
-```
+Aktuell gibt es nur test_map.tscn - Zeit für mehr!
 
-### 2.2 Research Tiers
+#### Was hinzufügen:
+- **3-5 verschiedene Maps** mit verschiedenen Layouts
+- **Map Selection** im Hauptmenü (schon vorhanden: world_selection.gd!)
+- **Map Metadaten** - Name, Schwierigkeit, Preview-Bild
+- **Resource Distribution** - Manche Maps haben mehr Wood, andere mehr Stone
 
-#### Tier 1: Basics (Verfügbar von Start)
-```yaml
-Basic Mining:
-  - Benötigt: 0 (Start-Tech)
-  - Freischaltet: Manual Mining, Stone Collection
+#### Map Themes:
+1. **Forest Map** - Viel Wood, wenig Stone
+2. **Mountain Map** - Viel Stone, wenig Wood
+3. **Plains Map** - Balanced, große offene Flächen
+4. **Desert Map** (Optional) - Wenig Resources, Challenge
+
+### 3.2 Umgebungs-Objekte
+
+Maps interessanter machen mit Dekoration!
+
+#### Was hinzufügen:
+- **Bäume** (nicht abbaubar) - Visuelle Dekoration
+- **Felsen** - Hindernisse, blockieren Weg
+- **Gras/Büsche** - Details
+- **Wasser** (TileMap) - Nicht begehbar
+
+#### Lernpunkte:
+- TileMap layers (Ground, Decoration, Collision)
+- Collision Layers richtig nutzen
+- Level Design Basics
+
+### 3.3 Implementierungs-Checkliste Phase 3
+
+- [ ] **Woche 1: Maps**
+  - [ ] 3 neue Maps erstellen (Forest, Mountain, Plains)
+  - [ ] Resource Distribution anpassen
+  - [ ] Map Preview Screenshots
+  - [ ] Map Selection UI erweitern
   
-Basic Building:
-  - Benötigt: 50 Stone
-  - Freischaltet: Walls, Container, Conveyor
-  
-Basic Weapons:
-  - Benötigt: 30 Stone, 20 Iron
-  - Freischaltet: Duo Turret, Basic Ammo
-```
+- [ ] **Woche 2: Umgebung**
+  - [ ] Dekorations-Sprites erstellen/finden
+  - [ ] TileMap Layers organisieren
+  - [ ] Kollisionen setzen
+  - [ ] Testing & Balancing
 
-#### Tier 2: Automatisierung
-```yaml
-Mechanical Drilling:
-  - Benötigt: Basic Building, 100 Iron, 50 Coal
-  - Freischaltet: Drill, Mechanical Drill
-  
-Power Generation:
-  - Benötigt: Basic Building, 80 Coal, 60 Iron
-  - Freischaltet: Coal Generator, Power Grid
-  
-Advanced Logistics:
-  - Benötigt: Basic Building, 150 Stone
-  - Freischaltet: Junction, Router, Overflow Gate
-```
+**Zeitaufwand:** ~2 Wochen  
+**Deliverable:** Mehrere spielbare Maps mit Abwechslung
 
-#### Tier 3: Verarbeitung
-```yaml
-Smelting:
-  - Benötigt: Power Generation, 200 Iron, 100 Coal
-  - Freischaltet: Smelter, Iron Ingots
-  
-Silicon Processing:
-  - Benötigt: Smelting, 150 Coal, 100 Iron
-  - Freischaltet: Silicon Smelter, Silicon Production
-  
-Oil Refining:
-  - Benötigt: Power Generation, 300 Iron
-  - Freischaltet: Oil Extractor, Refinery
-```
+---
 
-#### Tier 4: Fortgeschritten
-```yaml
-Advanced Defense:
-  - Benötigt: Basic Weapons, Silicon Processing
-  - Freischaltet: Scatter, Hail, Ripple Turrets
-  
-Plastanium Production:
-  - Benötigt: Oil Refining, Silicon Processing
-  - Freischaltet: Advanced Materials
-  
-Nuclear Power:
-  - Benötigt: Alle Tier 3 Techs
-  - Freischaltet: Thorium Reactor, Nuclear Fuel
-```
+## ⚔️ Phase 4: Combat-Erweiterung (Woche 7-9)
 
-### 2.3 Freischalt-Mechaniken
+### Priorität: **MITTEL** 🟡
 
-#### Ressourcen-basiert
+**Lernziel:** Kampfsystem verbessern, Gegner einbauen  
+**Warum:** Gameplay-Loop: Sammeln → Bauen → Verteidigen
+
+### 4.1 Einfache Gegner (Enemies)
+
+Start simple: Grundlegende Gegner-KI
+
+#### Erster Gegner: "Slime"
 ```gdscript
-# Kosten für Research
-var research_cost = {
-    "stone": 100,
-    "iron": 50,
-    "coal": 30
+extends CharacterBody2D
+class_name Enemy
+
+@export var health: float = 30.0
+@export var speed: float = 50.0
+@export var damage: float = 5.0
+@export var attack_range: float = 30.0
+
+var target: Node2D = null  # Der Spieler
+
+func _physics_process(delta):
+    if target:
+        _move_to_target(delta)
+        _attack_if_in_range()
+
+func _move_to_target(delta):
+    var direction = (target.global_position - global_position).normalized()
+    velocity = direction * speed
+    move_and_slide()
+
+func take_damage(amount: float):
+    health -= amount
+    if health <= 0:
+        queue_free()
+```
+
+#### Features:
+- **Folgt dem Spieler** - Einfache Navigation
+- **Greift an** - Wenn in Reichweite
+- **Kann getötet werden** - Mit Waffen
+- **Spawner** - Erscheinen an bestimmten Punkten
+
+### 4.2 Weapon Improvements
+
+Bestehende Waffen verbessern
+
+#### Was hinzufügen:
+- **Munitions-System** - Waffen verbrauchen Ressourcen als Ammo
+- **Reload-Mechanik** - Nachladen nach X Schüssen
+- **Weapon Switching** - Mit Zahlen-Tasten wechseln
+- **Weapon Upgrade System** - Mit Ressourcen verbessern
+
+#### Beispiel Munitions-System:
+```gdscript
+# In weapon_controller.gd
+@export var uses_ammo: bool = false
+@export var ammo_type: String = "iron"
+@export var ammo_per_shot: int = 1
+
+func _try_shoot():
+    if uses_ammo:
+        var inventory = player.get_inventory()
+        if inventory.get(ammo_type, 0) < ammo_per_shot:
+            return  # Nicht genug Munition
+        
+        # Munition abziehen
+        player.inventory_component.consume_resource(ammo_type, ammo_per_shot)
+    
+    _shoot()
+```
+
+### 4.3 Implementierungs-Checkliste Phase 4
+
+- [ ] **Woche 1: Basis-Gegner**
+  - [ ] Enemy Base-Klasse erstellen
+  - [ ] Slime Gegner mit einfacher KI
+  - [ ] Enemy Spawner System
+  - [ ] Damage-System (Enemy -> Player)
+  
+- [ ] **Woche 2: Combat Polish**
+  - [ ] Munitions-System
+  - [ ] Weapon Switching
+  - [ ] Hit-Feedback (Particles, Sound)
+  - [ ] Death Animations
+  
+- [ ] **Woche 3: Balancing & Testing**
+  - [ ] Enemy Balancing (HP, Damage, Speed)
+  - [ ] Spawn Rates anpassen
+  - [ ] Testing verschiedener Situationen
+  - [ ] Bug Fixes
+
+**Zeitaufwand:** ~3 Wochen  
+**Deliverable:** Funktionierendes Combat-System mit Gegnern
+
+---
+
+## 🎓 Phase 5: Progression-System (Woche 10-12)
+
+### Priorität: **NIEDRIG** 🟢
+
+**Lernziel:** Player Progression, Unlocks, Motivation  
+**Warum:** Langzeit-Motivation, Fortschritt spürbar machen
+
+### 5.1 Einfaches Upgrade-System
+
+Nicht direkt ein komplexer Tech-Tree - Start simple!
+
+#### Was implementieren:
+- **Player Upgrades** - Mit Ressourcen kaufbar
+- **Upgrade-Kategorien:**
+  - Mining Speed (+10% schneller für 50 Stone)
+  - Movement Speed (+10% schneller für 30 Stone)
+  - Max Health (+20 HP für 40 Stone, 20 Iron)
+  - Weapon Damage (+5 Damage für 50 Iron)
+  - Inventory Size (+50 Kapazität für 30 Wood)
+
+#### Implementierung:
+```gdscript
+# Scripts/Core/upgrade_manager.gd
+extends Node
+
+var upgrades := {
+    "mining_speed": 0,
+    "movement_speed": 0,
+    "max_health": 0,
+    # ...
 }
-# Spieler muss Ressourcen investieren
+
+func purchase_upgrade(upgrade_name: String, cost: Dictionary) -> bool:
+    var player = get_tree().get_first_node_in_group("player")
+    var inventory = player.get_inventory()
+    
+    # Check affordability
+    for resource in cost:
+        if inventory.get(resource, 0) < cost[resource]:
+            return false
+    
+    # Deduct resources & apply upgrade
+    for resource in cost:
+        player.inventory_component.consume_resource(resource, cost[resource])
+    
+    upgrades[upgrade_name] += 1
+    _apply_upgrade(upgrade_name)
+    return true
 ```
 
-#### Zeit-basiert
-```gdscript
-# Forschung dauert X Sekunden
-var research_time: float = 30.0
-# Progress Bar in UI
-```
+### 5.2 Upgrade UI
 
-#### Voraussetzungs-Ketten
-```gdscript
-# Manche Techs benötigen andere Techs
-var prerequisites: Array[String] = ["basic_building", "power_generation"]
-```
+Ein Menü wo man Upgrades kaufen kann
 
-### 2.4 Implementierungs-Checkliste Research
+#### Features:
+- **Liste aller Upgrades** mit Kosten
+- **Current Level** anzeigen
+- **Buy Button** - Grayed out wenn zu teuer
+- **Preview** - Was bringt das Upgrade?
 
-- [ ] **Woche 1: System-Basis**
-  - [ ] ResearchTree Autoload erstellen
-  - [ ] ResearchNode Resource definieren
-  - [ ] Save/Load für freigeschaltete Techs
-  - [ ] Basic unlocking logic
+### 5.3 Implementierungs-Checkliste Phase 5
+
+- [ ] **Woche 1: System**
+  - [ ] UpgradeManager Autoload
+  - [ ] 5-8 verschiedene Upgrades definieren
+  - [ ] Upgrade Apply Logik
+  - [ ] Save/Load für Upgrades
   
 - [ ] **Woche 2: UI**
-  - [ ] Tech Tree Menü erstellen
-  - [ ] Nodes mit Verbindungslinien
-  - [ ] Progress Bars & Tooltips
-  - [ ] Ressourcen-Anzeige
+  - [ ] Upgrade-Menü Scene
+  - [ ] Liste mit Buttons
+  - [ ] Cost Display
+  - [ ] Purchase Feedback
   
-- [ ] **Woche 3: Content**
-  - [ ] 10-15 Research Nodes definieren
-  - [ ] Icons für Technologien
-  - [ ] Balancing der Kosten
-  - [ ] Integration mit Building System
+- [ ] **Woche 3: Balancing**
+  - [ ] Upgrade-Kosten balancen
+  - [ ] Effekt-Stärken testen
+  - [ ] Progression testen
+  - [ ] Polish & Bug Fixes
+
+**Zeitaufwand:** ~3 Wochen  
+**Deliverable:** Spieler kann sich mit Ressourcen verbessern
 
 ---
 
-## 📦 Phase 3: Logistik-System (Conveyors & Transport)
+## 🔮 Zukünftige Ideen (Nice to Have)
 
-### Priorität: **HOCH** 🔴
+### Längerfristige Features (Monat 4+)
 
-Logistik ist das Herzstück von Mindustry!
+Diese Features sind interessant, aber nicht kritisch:
 
-### 3.1 Conveyor Basis-System
+1. **Automatische Ressourcen-Sammlung**
+   - Drilling-Maschinen die automatisch abbauen
+   - Conveyor Belts für Transport (komplex!)
+   - Storage-System das wirklich funktioniert
 
-```
-Scripts/Logistics/
-├── conveyor_base.gd          # Basis für alle Förderbänder
-├── conveyor_item.gd          # Items die transportiert werden
-├── logistics_manager.gd      # Autoload für Item-Tracking
-└── conveyor_renderer.gd      # Visuelle Darstellung
-```
+2. **Crafting-System**
+   - Ressourcen kombinieren (Stone + Wood = Tools)
+   - Crafting-Stations
+   - Rezepte freischalten
 
-### 3.2 Conveyor Typen
+3. **Quest/Mission-System**
+   - "Sammle 100 Stone"
+   - "Töte 10 Slimes"
+   - "Baue 5 Storage Boxes"
+   - Belohnungen geben
 
-#### Basic Conveyor
-```gdscript
-# Eigenschaften:
-- Transportgeschwindigkeit: 1 Item/Sekunde
-- Kosten: 1 Stone pro Segment
-- Kann rotiert werden (4 Richtungen)
-- Max Kapazität: 3 Items gleichzeitig
-```
+4. **Tag/Nacht-Zyklus**
+   - Nachts kommen mehr Gegner
+   - Beleuchtungs-System
+   - Atmosphäre
 
-#### Titanium Conveyor
-```gdscript
-- Schneller: 2 Items/Sekunde
-- Kosten: 2 Iron, 1 Titanium
-- Höhere Kapazität: 5 Items
-```
+5. **Save/Load-System**
+   - Fortschritt speichern
+   - Mehrere Save-Slots
+   - Auto-Save
 
-#### Armored Conveyor
-```gdscript
-- Kann von Feinden nicht zerstört werden
-- Normale Geschwindigkeit
-- Kosten: 3 Iron, 2 Titanium
-```
-
-### 3.3 Logistik-Gebäude
-
-#### Junction (Kreuzung)
-```gdscript
-# Lässt Conveyors sich kreuzen ohne zu mischen
-- 2 unabhängige Durchgänge
-- Keine Item-Vermischung
-- Kosten: 2 Stone
-```
-
-#### Router (Verteiler)
-```gdscript
-# Verteilt Items auf alle Ausgänge
-- 1 Input → 4 Outputs (N/S/E/W)
-- Round-Robin Distribution
-- Kosten: 3 Stone, 1 Iron
-```
-
-#### Sorter (Sortier-Gerät)
-```gdscript
-# Filtert spezifische Items
-- Lässt nur gewählte Items durch
-- Andere Items zur Seite
-- Kosten: 3 Iron, 1 Silicon
-```
-
-#### Overflow Gate
-```gdscript
-# Leitet Items weiter wenn Hauptweg voll
-- Haupt-Output hat Priorität
-- Überlauf zum Side-Output
-- Wichtig für Puffer-Systeme
-```
-
-#### Underflow Gate
-```gdscript
-# Gegenteil von Overflow
-- Side-Output hat Priorität
-- Haupt-Output nur wenn Side voll
-```
-
-#### Mass Driver
-```gdscript
-# Schießt Items über Distanz
-- Reichweite: 300 Pixel
-- Benötigt Energie
-- Kosten: 50 Iron, 30 Silicon, 20 Coal
-```
-
-### 3.4 Storage Gebäude
-
-#### Container (Basis-Lager)
-```gdscript
-# Eigenschaften:
-- Kapazität: 100 Items pro Ressource
-- Akzeptiert von Conveyors
-- Gibt an Conveyors ab
-- Kosten: 10 Stone, 5 Iron
-```
-
-#### Vault (Großes Lager)
-```gdscript
-- Kapazität: 500 Items pro Ressource
-- Kosten: 50 Iron, 30 Titanium
-```
-
-#### Unloader (Entlader)
-```gdscript
-# Zieht Items aus Container auf Conveyor
-- Rate: 1 Item/Sekunde
-- Filtert spezifische Items
-- Kosten: 5 Stone, 3 Iron
-```
-
-### 3.5 Implementierungs-Checkliste Logistics
-
-- [ ] **Woche 1-2: Conveyor Basis**
-  - [ ] Item-Transport Logik
-  - [ ] ConveyorItem Klasse (Position, Type, Direction)
-  - [ ] Conveyor Rendering (animierte Items)
-  - [ ] Grid-basierte Conveyor-Platzierung
-  - [ ] Richtungs-System (N/S/E/W)
-  
-- [ ] **Woche 3: Verbindungen**
-  - [ ] Input/Output Detection
-  - [ ] Gebäude ↔ Conveyor Interface
-  - [ ] Drill → Conveyor Output
-  - [ ] Conveyor → Container Input
-  
-- [ ] **Woche 4: Erweiterte Logistik**
-  - [ ] Router implementieren
-  - [ ] Junction für Kreuzungen
-  - [ ] Overflow/Underflow Gates
-  - [ ] Sorter mit Item-Filter
-  
-- [ ] **Woche 5: Polish**
-  - [ ] Animations & Visuals
-  - [ ] Sound Effects
-  - [ ] Performance Optimierung (Object Pooling)
-  - [ ] Stress-Testing (100+ Conveyors)
+6. **Multiplayer** (sehr komplex!)
+   - Co-op spielen
+   - Ressourcen teilen
+   - Gemeinsam bauen
 
 ---
 
-## 💡 Phase 4: Zusätzliche Systeme
+## 📅 Grobe Zeitplanung
 
-### 4.1 Energie-System (Power Grid)
+### Monat 1: Visuelles & Basics
+- **Woche 1-2:** Phase 1 - Mining Feedback & Node Varietät
+- **Woche 3-4:** Phase 2 - Platzierungs-System & Storage Box
 
-#### Komponenten
-```
-Scripts/Power/
-├── power_grid.gd             # Verwaltet Energie-Netzwerk
-├── power_node.gd             # Basis für Energie-Gebäude
-├── power_producer.gd         # Generatoren
-└── power_consumer.gd         # Verbraucher (Drills, etc.)
-```
+**Ziel:** Mining fühlt sich gut an, erste Platzierung funktioniert
 
-#### Features
-- Power Nodes verbinden Gebäude
-- Produzenten vs. Konsumenten
-- Netzwerk-Auslastung anzeigen
-- Brownout wenn zu wenig Energie
+### Monat 2: Welt & Combat
+- **Woche 5-6:** Phase 3 - Mehrere Maps & Umgebung
+- **Woche 7-9:** Phase 4 - Gegner & Combat
 
-#### Gebäude
-- **Power Node** - Verbindet Gebäude (Reichweite: 100px)
-- **Battery** - Speichert Energie für später
-- **Solar Panel** - Langsame aber kostenlose Energie
-- **Coal Generator** - Siehe Phase 1.2
+**Ziel:** Mehrere Maps, grundlegender Gameplay-Loop (sammeln & kämpfen)
 
-### 4.2 Flüssigkeits-System (Liquids)
+### Monat 3: Progression
+- **Woche 10-12:** Phase 5 - Upgrade-System
 
-#### Neue Ressourcen
-- **Water** - Für Kühlung und Steam
-- **Oil** - Für Treibstoff und Plastanium
-- **Slag** - Abfallprodukt, muss entsorgt werden
-- **Cryofluid** - Kühlung für Turrets
+**Ziel:** Langzeit-Motivation durch Upgrades
 
-#### Logistik-Komponenten
-- **Conduit** - Wie Conveyor aber für Flüssigkeiten
-- **Liquid Tank** - Storage für Liquids
-- **Pump** - Extrahiert Wasser/Öl aus Boden
-- **Liquid Router** - Verteilt Flüssigkeiten
-
-### 4.3 Gegner-System (Enemies)
-
-```
-Scripts/Enemies/
-├── enemy_base.gd             # Basis-Klasse für Gegner
-├── enemy_spawner.gd          # Wellen-System
-├── enemy_pathfinding.gd      # A* Navigation
-└── enemy_ai.gd               # Verhalten
-```
-
-#### Gegner-Typen
-- **Dagger** - Schnell, schwach (HP: 50)
-- **Crawler** - Explodiert bei Kontakt (Suicide)
-- **Fortress** - Langsam, viele HP (HP: 500)
-- **Wraith** - Fliegt, schwer zu treffen
-
-#### Wellen-System
-```gdscript
-# Gegner spawnen in Wellen
-- Welle 1: 5x Dagger
-- Welle 2: 10x Dagger
-- Welle 3: 8x Dagger + 2x Crawler
-- Welle 5: 15x Dagger + 5x Crawler + 1x Fortress
-# Schwierigkeit steigt exponentiell
-```
-
-### 4.4 Crafting/Produktion erweitern
-
-#### Neue Materialien
-```yaml
-Silicon:
-  - Input: Coal + Sand
-  - Output: Silicon
-  - Verwendung: Advanced Buildings
-  
-Plastanium:
-  - Input: Oil + Titanium
-  - Output: Plastanium
-  - Verwendung: High-Tech Buildings
-  
-Thorium:
-  - Seltene Ressource
-  - Mining mit Advanced Drill
-  - Nuclear Power
-```
-
-### 4.5 Map & Welt
-
-#### Features
-- **Fog of War** - Unentdeckte Bereiche dunkel
-- **Minimap** - Übersicht über gesamte Karte
-- **Multiple Maps** - Verschiedene Szenarien
-- **Procedural Generation** - Zufalls-Maps
-- **Biomes** - Desert, Snow, Volcanic
-- **Enemy Bases** - Zu erobernde Zonen
-
-### 4.6 Kampagnen-Modus
-
-#### Progression
-```
-Sektor 1: Tutorial
-- Basis-Mining lernen
-- Erstes Conveyor-System
-- Einfache Verteidigung
-
-Sektor 2: Grundlagen
-- Coal Generator bauen
-- Smelter verwenden
-- 10 Wellen überleben
-
-Sektor 3: Fortgeschritten
-- Silicon Produktion
-- Advanced Drills
-- 20 Wellen, stärkere Gegner
-
-Sektor 4: Meisterung
-- Komplexe Logistik
-- Nuclear Power
-- Boss-Welle
-```
-
----
-
-## 📅 Roadmap & Zeitplan
-
-### Monat 1: Fundament
-**Woche 1-2:** Gebäude-System Basis (Grid, Placer, BaseBuilding)  
-**Woche 3:** Erste Gebäude (Drill, Wall, Container)  
-**Woche 4:** UI & Testing
-
-**Deliverable:** Spieler kann Gebäude platzieren und Drill sammelt Ressourcen automatisch
-
-### Monat 2: Logistik
-**Woche 5-6:** Conveyor-System (Item Transport, Rendering)  
-**Woche 7:** Verbindungen (Buildings ↔ Conveyors)  
-**Woche 8:** Router, Junction, Sorter
-
-**Deliverable:** Vollständige Logistik-Pipeline von Drill → Conveyor → Container
-
-### Monat 3: Verteidigung & Energie
-**Woche 9:** Turm-System (Auto-Targeting)  
-**Woche 10:** Energie-System (Power Grid)  
-**Woche 11:** Gegner-System (Spawning, Pathfinding)  
-**Woche 12:** Wellen-System & Balancing
-
-**Deliverable:** Spieler kann Basis verteidigen gegen Gegnerwellen
-
-### Monat 4: Research & Content
-**Woche 13-14:** Tech Tree System  
-**Woche 15:** Research Nodes & UI  
-**Woche 16:** Neue Gebäude & Items
-
-**Deliverable:** Progression durch Research System
-
-### Monat 5: Verarbeitung & Fluids
-**Woche 17-18:** Smelter & Processing Buildings  
-**Woche 19:** Flüssigkeits-System Basis  
-**Woche 20:** Pumps & Conduits
-
-**Deliverable:** Komplexe Produktionsketten
-
-### Monat 6: Polish & Campaign
-**Woche 21-22:** Multiple Maps & Fog of War  
-**Woche 23:** Kampagnen-Modus  
-**Woche 24:** Bug Fixes, Balancing, Release Prep
-
-**Deliverable:** Spielbares MVP mit Kampagne
+### Monat 4+: Experimentieren
+- Eigene Ideen ausprobieren!
+- Features die dir Spaß machen
+- Vielleicht: Automatisierung, Crafting, Quests
 
 ---
 
 ## 🎯 Prioritäten-Matrix
 
-### Must Have (Kritisch)
+### Must Have (Kritisch für MVP)
 1. ✅ Player & Movement
-2. ✅ Ressourcen-Mining
-3. 🔴 Gebäude-System (Grid-Platzierung)
-4. 🔴 Conveyor/Logistik-System
-5. 🔴 Container/Storage
-6. 🟡 Basis-Verteidigung (Turrets)
-7. 🟡 Gegner-System (Wellen)
+2. ✅ Ressourcen-Mining (manuell)
+3. ✅ Inventar-System
+4. 🔴 **Visuelles Feedback** (Phase 1)
+5. 🔴 **Basis-Platzierung** (Phase 2)
+6. 🟡 **Gegner-System** (Phase 4)
 
-### Should Have (Wichtig)
-8. 🟡 Energie-System
-9. 🟡 Tech Tree/Research
-10. 🟡 Verarbeitungs-Gebäude (Smelter)
-11. 🟢 Multiple Maps
-12. 🟢 Crafting erweitern
+### Should Have (Wichtig für Spielgefühl)
+7. 🟡 **Mehrere Maps** (Phase 3)
+8. 🟡 **Weapon Improvements** (Phase 4)
+9. 🟢 **Upgrade-System** (Phase 5)
+10. 🟢 **Save/Load-System**
 
-### Nice to Have (Optional)
-13. 🟢 Flüssigkeits-System
-14. 🟢 Advanced Logistics (Mass Driver)
-15. 🟢 Kampagnen-Modus
-16. 🟢 Procedural Maps
-17. 🔵 Multiplayer
-18. 🔵 Modding Support
+### Nice to Have (Optional, später)
+11. 🟢 **Automatisierung** (Drills, Conveyors)
+12. 🟢 **Crafting-System**
+13. 🔵 **Quest-System**
+14. 🔵 **Tag/Nacht**
+15. 🔵 **Multiplayer**
 
 **Legende:**  
-🔴 Hoch | 🟡 Mittel | 🟢 Niedrig | 🔵 Future/Optional
+🔴 Hoch (Sofort) | 🟡 Mittel (Bald) | 🟢 Niedrig (Später) | 🔵 Optional (Vielleicht nie)
 
 ---
 
-## 🛠️ Technische Empfehlungen
+## 🛠️ Technische Best Practices
 
-### Code-Architektur
+### Code Organisation
 
-#### Autoloads für Manager
+#### Vermeide Über-Engineering
 ```gdscript
-# Erstelle in Scripts/Core/
-GameManager.gd        # Spielstatus, Pause, etc.
-BuildingManager.gd    # Alle platzierten Gebäude
-LogisticsManager.gd   # Item-Transport Koordination
-PowerGrid.gd          # Energie-Netzwerk
-ResearchTree.gd       # Tech Tree Status
+# ❌ Zu komplex für den Start:
+class AbstractBuildingFactory:
+    func create_building(type: BuildingType) -> IBuilding:
+        # ...
+
+# ✅ Besser - einfach und erweiterbar:
+func create_storage_box(position: Vector2) -> Node2D:
+    var box = storage_box_scene.instantiate()
+    box.global_position = position
+    return box
 ```
 
-#### Signal-basierte Kommunikation
+#### Nutze Godots Features
+- **@export** für Designer-Friendly Values
+- **@onready** für Node-Referenzen
+- **Signals** für Kommunikation
+- **Resources** für Daten (wie WeaponData)
+
+### Performance Tipps
+
+#### Object Pooling (später wichtig)
 ```gdscript
-# Vermeide direkte Referenzen zwischen Systemen
-# Nutze Signals für loose coupling
+# Für häufig erstellte Objekte (Particles, Projectiles)
+var projectile_pool: Array[Node2D] = []
 
-signal building_placed(building: BaseBuilding)
-signal resource_produced(type: String, amount: int)
-signal enemy_spawned(enemy: Enemy)
+func get_projectile() -> Node2D:
+    if projectile_pool.is_empty():
+        return projectile_scene.instantiate()
+    return projectile_pool.pop_back()
+
+func return_projectile(proj: Node2D):
+    proj.visible = false
+    projectile_pool.append(proj)
 ```
 
-#### Resource-basierte Daten
+#### Update-Optimierung
 ```gdscript
-# Definiere Gebäude, Items, Techs als Resources
-# Einfach zu erweitern, zu balancen, zu modden
+# Nicht alles jeden Frame prüfen
+var update_timer: float = 0.0
+const UPDATE_INTERVAL: float = 0.1  # Nur alle 100ms
 
-@export var building_data: Array[BuildingData]
+func _process(delta):
+    update_timer += delta
+    if update_timer >= UPDATE_INTERVAL:
+        update_timer = 0.0
+        _do_expensive_check()
 ```
 
-### Performance-Optimierungen
+### Testing Strategie
 
-#### Object Pooling
+#### Manuelles Testing
+Nach jeder Phase:
+1. Spiel starten und Feature testen
+2. Edge Cases probieren (Was wenn...)
+3. Performance checken (FPS in F3 Console)
+4. Mit Freunden testen lassen (Fresh Perspective!)
+
+#### Debugging Helpers
 ```gdscript
-# Für häufig erstellte/zerstörte Objekte
-- Projektile
-- Conveyor Items
-- Partikel-Effekte
-- Gegner
-
-# Erstelle Pool mit 100 Objekten, wiederverwenden
-```
-
-#### Spatial Hashing
-```gdscript
-# Für Kollisions-Detection bei vielen Objekten
-# Wichtig bei 100+ Gebäuden und 50+ Gegnern
-
-# Teile Map in Grid-Cells
-# Prüfe nur Objekte in gleicher/angrenzenden Cells
-```
-
-#### Update-Batching
-```gdscript
-# Nicht jedes Building jeden Frame updaten
-# Conveyor Items: Update in Batches
-# Drills: Update alle 0.1 Sekunden ausreichend
-```
-
-### Testing-Strategie
-
-#### Unit Tests
-```gdscript
-# Teste Logik isoliert
-- Inventory add/remove
-- Conveyor item movement
-- Research unlock logic
-- Power grid calculations
-```
-
-#### Integration Tests
-```gdscript
-# Teste Zusammenspiel
-- Drill → Conveyor → Container
-- Generator → Power Grid → Consumer
-- Research unlock → Building available
-```
-
-#### Playtesting
-```
-Session 1: Mining & Building
-Session 2: Logistics Flow
-Session 3: Defense & Waves
-Session 4: Full Progression
+# Debug-Overlays für Entwicklung
+func _draw():
+    if Engine.is_editor_hint():
+        return
+    
+    if OS.is_debug_build():
+        # Zeige Interact Range
+        draw_circle(Vector2.ZERO, interact_range, Color.RED, false)
 ```
 
 ---
 
 ## 📚 Lernressourcen
 
-### Godot-spezifisch
-- **Godot Docs:** Tilemap, TileSet für Grid-System
-- **Godot Docs:** Signals & Groups für Kommunikation
-- **YouTube:** "How to make a tower defense" - GDQuest
-- **YouTube:** "Conveyor Belt System" - HeartBeast
+### Godot Lernen
+- **Godot Docs** - [docs.godotengine.org](https://docs.godotengine.org)
+- **GDQuest** - YouTube Tutorials (sehr gut!)
+- **HeartBeast** - Godot RPG/Action Game Tutorials
+- **Brackeys** - Game Dev Basics (Unity, aber Konzepte übertragbar)
 
-### Mindustry-spezifisch
-- **Mindustry Wiki:** Alle Gebäude & Stats
-- **Mindustry GitHub:** Open Source, kannst reinschauen
-- **Reddit r/Mindustry:** Community-Strategien
+### Gamedesign Prinzipien
+- **"The Art of Game Design"** - Jesse Schell (Buch)
+- **Extra Credits** - YouTube Channel über Game Design
+- **GMTK (Game Maker's Toolkit)** - Excellente Design-Analysen
 
-### Game Design
-- **"Factorio" Logistik-Prinzipien**
-- **"Tower Defense" Balancing**
-- **"Tech Trees" Design Patterns**
+### Godot-spezifische Themen
+- **Particle Systems** - Godot Docs: GPUParticles2D
+- **TileMaps** - Godot Docs: TileMap & TileSet
+- **Signals** - Godot Docs: Using Signals
+- **Resources** - Godot Docs: Resources
 
 ---
 
-## ✅ Quick Start Guide
+## ✅ Quick Start - Diese Woche
 
-### Diese Woche beginnen
+### Tag 1-2: Mining Partikel
+1. [ ] GPUParticles2D zu ResourceNode hinzufügen
+2. [ ] Partikel konfigurieren (Farbe je nach Ressource)
+3. [ ] Beim Mining aktivieren
+4. [ ] Testen & Tweaken
 
-1. **Heute:**
-   - [ ] `Scripts/Buildings/` Ordner erstellen
-   - [ ] `base_building.gd` Grundgerüst schreiben
-   - [ ] Grid-System Recherche (TileMap vs. Custom)
+### Tag 3-4: Mining Sounds
+1. [ ] Sound-Effekte finden/erstellen (freesound.org)
+2. [ ] AudioStreamPlayer zu ResourceNode
+3. [ ] Beim Mining abspielen
+4. [ ] Lautstärke anpassen
 
-2. **Diese Woche:**
-   - [ ] Building Placer implementieren
-   - [ ] Ghost-Vorschau beim Bauen
-   - [ ] Ersten Drill als Test-Building
+### Tag 5-7: Node Depletion
+1. [ ] `current_resources` Variable zu ResourceNode
+2. [ ] Mining reduziert current_resources
+3. [ ] Node wird durchsichtig wenn leer
+4. [ ] Node verschwindet wenn aufgebraucht
+5. [ ] Testen mit verschiedenen Werten
 
-3. **Nächste Woche:**
-   - [ ] Container für Ressourcen-Storage
-   - [ ] Wall als einfaches Verteidigungs-Gebäude
-   - [ ] Build-Menü UI
+**Nächste Woche:** Anfangen mit Placement-System!
 
 ---
 
 ## 🎓 Abschließende Gedanken
 
-Du hast bereits ein **solides Fundament** gelegt:
-- ✅ Saubere Architektur (Component-based)
-- ✅ Funktionierendes Mining-System
-- ✅ Ressourcen-Management
-- ✅ Waffen-System
+### Du hast bereits viel geschafft! ✅
+- Saubere, modulare Architektur
+- Funktionierendes Core-Gameplay
+- Gutes Verständnis von Godot & GDScript
+- Solide Basis für weitere Features
 
-Die **nächsten großen Schritte** sind:
-1. **Gebäude-System** - Basis für alles weitere
-2. **Logistik-System** - Das Herz von Mindustry
-3. **Verteidigungs-Türme** - Gameplay Loop
+### Der Weg nach vorne 🚀
+Dieser Roadmap ist ein **Vorschlag**, kein Gesetz!
+- **Folge deiner Motivation** - Mach was dir Spaß macht
+- **Lerne durchs Machen** - Ausprobieren > Perfektionieren
+- **Iteriere** - Erst simple Version, dann verbessern
+- **Hab Geduld** - Gute Spiele brauchen Zeit
 
-Mit dieser Roadmap hast du einen **klaren Pfad** für die nächsten **6 Monate** Entwicklung.
+### Wichtigste Prinzipien 💡
+1. **Start Simple** - Komplexität kommt später
+2. **Finish Features** - Lieber wenige fertige Features als viele angefangene
+3. **Test Early** - Oft spielen und testen
+4. **Have Fun** - Es ist dein Lernprojekt!
 
-**Bleib am Ball, nimm dir Zeit, und hab Spaß beim Lernen!** 🚀
+**Du lernst am meisten, wenn du Spaß hast!** 🎮
 
 ---
 
 ## 📝 Change Log
 
-- **2026-01-01:** Initiale Version erstellt
-  - Phase 1: Buildings (21 Gebäude-Typen definiert)
-  - Phase 2: Research (4 Tech Tiers geplant)
-  - Phase 3: Logistics (11 Logistik-Komponenten)
-  - Phase 4: Zusätzliche Systeme (5 weitere Features)
-  - 6-Monats Roadmap erstellt
-  - Prioritäten-Matrix festgelegt
+- **2026-01-01:** Version 2.0 - Komplett überarbeitet
+  - Fokus auf eigene Mechaniken statt Mindustry-Kopie
+  - 5 Phasen mit konkreten, erreichbaren Zielen
+  - Weniger komplex, mehr auf Lernen ausgerichtet
+  - Realistische Zeiteinschätzungen
+  - Betonung auf "Start Simple"
 
 ---
 
-**Projekt:** Mindustry Clone  
-**Dokument:** Next Steps & Roadmap  
-**Version:** 1.0  
-**Autor:** GitHub Copilot für Hellboy20151011  
+**Projekt:** Mindustry Clone (Inspiriert, nicht kopiert!)  
+**Dokument:** Lern-Roadmap & Nächste Schritte  
+**Version:** 2.0  
 **Datum:** 1. Januar 2026
 
-🎮 **Viel Erfolg mit deinem Projekt!** 🎮
+🎮 **Viel Erfolg und vor allem: Hab Spaß beim Lernen!** 🎮
