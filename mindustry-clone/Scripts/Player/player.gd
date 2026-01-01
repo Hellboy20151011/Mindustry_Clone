@@ -1,3 +1,8 @@
+## Player Controller - Component-based player management
+## 
+## This is the main player controller that delegates functionality to specialized components.
+## It uses a component-based architecture for modularity and maintainability.
+## Components handle: movement, camera, inventory, mining, and stats.
 extends CharacterBody2D
 
 # Forward signals from components
@@ -42,23 +47,32 @@ func _on_shield_changed(current: float, maximum: float) -> void:
 shield_changed.emit(current, maximum)
 
 # Public API - delegates to components
+
+## Returns the player's current inventory
 func get_inventory() -> Dictionary:
 if inventory_component:
 return inventory_component.get_inventory()
 return {}
 
+## Applies damage to the player (shield absorbs first, then health)
+## @param amount: The amount of damage to apply
 func take_damage(amount: float) -> void:
 if stats_component:
 stats_component.take_damage(amount)
 
+## Restores player health up to maximum
+## @param amount: The amount of health to restore
 func heal(amount: float) -> void:
 if stats_component:
 stats_component.heal(amount)
 
+## Restores player shield up to maximum
+## @param amount: The amount of shield to restore
 func restore_shield(amount: float) -> void:
 if stats_component:
 stats_component.restore_shield(amount)
 
+## Returns all player statistics including health, shield, and movement speed
 func get_stats() -> Dictionary:
 if stats_component and movement_component:
 var stats = stats_component.get_stats()
