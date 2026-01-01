@@ -20,7 +20,7 @@ Dieses Dokument enthält eine umfassende Überprüfung des Ressourcenabbau-Syste
 
 ### 2. **Fractional Resource Accumulation** ⭐⭐⭐⭐⭐
 ```gdscript
-// PlayerInventory.gd
+# PlayerInventory.gd
 var _fraction_buffer := {} # key -> float
 func add_resource_fractional(key: String, amount: float)
 ```
@@ -33,9 +33,9 @@ func add_resource_fractional(key: String, amount: float)
 
 ### 3. **Robuste Target-Erkennung** ⭐⭐⭐⭐
 ```gdscript
-// PlayerMining.gd - _update_target()
-- Prüft über Gruppen: is_in_group("resource_node")
-- Fallback: direkte Klassenprüfung (is ResourceNode)
+# PlayerMining.gd - _update_target()
+# Prüft über Gruppen: is_in_group("resource_node")
+# Fallback: direkte Klassenprüfung (is ResourceNode)
 ```
 
 **Gut gemacht:**
@@ -44,10 +44,10 @@ func add_resource_fractional(key: String, amount: float)
 
 ### 4. **Flexible Resource Key Detection** ⭐⭐⭐⭐
 ```gdscript
-// PlayerMining.gd - _try_mine()
-1. node.get_resource_key() (bevorzugt)
-2. node.resource_key (alternativ)
-3. node.resource_type (alternativ)
+# PlayerMining.gd - _try_mine()
+# 1. node.get_resource_key() (bevorzugt)
+# 2. node.resource_key (alternativ)
+# 3. node.resource_type (alternativ)
 ```
 
 **Vorteil:**
