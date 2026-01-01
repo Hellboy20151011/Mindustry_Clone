@@ -1,6 +1,11 @@
-[gd_scene load_steps=10 format=3 uid="uid://dogpmn2rc2vcj"]
+[gd_scene load_steps=15 format=3 uid="uid://dogpmn2rc2vcj"]
 
 [ext_resource type="Script" uid="uid://bgi5lckuq46p1" path="res://Scripts/Player/player.gd" id="1_3obwd"]
+[ext_resource type="Script" path="res://Scripts/Player/PlayerMovement.gd" id="2_movement"]
+[ext_resource type="Script" path="res://Scripts/Player/PlayerCamera.gd" id="2_camera"]
+[ext_resource type="Script" path="res://Scripts/Player/PlayerInventory.gd" id="2_inventory"]
+[ext_resource type="Script" path="res://Scripts/Player/PlayerMining.gd" id="2_mining"]
+[ext_resource type="Script" path="res://Scripts/Player/PlayerStats.gd" id="2_stats"]
 [ext_resource type="Resource" uid="uid://dlyg7dnbfqmky" path="res://Actors/pistol.tres" id="3_fsb2p"]
 [ext_resource type="Texture2D" uid="uid://dfdolrregh4xq" path="res://Assets/Player_1.png" id="4_ypwy6"]
 [ext_resource type="Texture2D" uid="uid://bam2vdsnydg1n" path="res://Assets/Player_2.png" id="5_fsb2p"]
@@ -29,6 +34,21 @@ radius = 80.0
 
 [node name="Player" type="CharacterBody2D" groups=["Player"]]
 script = ExtResource("1_3obwd")
+
+[node name="PlayerMovement" type="Node" parent="."]
+script = ExtResource("2_movement")
+
+[node name="PlayerCamera" type="Node" parent="."]
+script = ExtResource("2_camera")
+
+[node name="PlayerInventory" type="Node" parent="."]
+script = ExtResource("2_inventory")
+
+[node name="PlayerMining" type="Node" parent="."]
+script = ExtResource("2_mining")
+
+[node name="PlayerStats" type="Node" parent="."]
+script = ExtResource("2_stats")
 
 [node name="WeaponPivot" type="Node2D" parent="."]
 script = ExtResource("5_ypwy6")
